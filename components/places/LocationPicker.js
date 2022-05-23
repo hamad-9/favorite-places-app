@@ -1,4 +1,4 @@
-import { StyleSheet, View, Alert } from "react-native";
+import { StyleSheet, View, Alert, Text, Image } from "react-native";
 import {
   getCurrentPositionAsync,
   useForegroundPermissions,
@@ -6,8 +6,11 @@ import {
 } from "expo-location";
 import OutlinedButton from "../ui/OutlinedButton";
 import { Colors } from "../../constants/colors";
+import { useState } from "react";
+import { getMapPreview } from "../../util/location";
 
 function LocationPicker() {
+  const [pickedLocation, setPickedLocation] = useState();
   //this is required for the both operating systems ios and android................................................
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
@@ -38,12 +41,28 @@ function LocationPicker() {
       return;
     }
     const location = await getCurrentPositionAsync();
-    console.log(location);
+    setPickedLocation({
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+    });
   }
   function pickOnMapHandler() {}
+  let locationPreview = <Text> No location picked yet! </Text>;
+  if (pickedLocation) {
+    console.log(getMapPreview(pickedLocation.lat, pickedLocation.lng));
+    locationPreview = (
+      <Image
+        style={styles.mapPreviewImage}
+        source={{
+          uri: getMapPreview(pickedLocation.lat, pickedLocation.lng),
+        }}
+      />
+    );
+  }
+
   return (
     <View>
-      <View style={styles.mapPreview}></View>
+      <View style={styles.mapPreview}>{locationPreview}</View>
       <View style={styles.actions}>
         <OutlinedButton icon="location" onPress={getLocationHandler}>
           Locate user
@@ -68,10 +87,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: Colors.primary100,
     borderRadius: 4,
+    overflow: "hidden",
   },
   actions: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  mapPreviewImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 4,
   },
 });
