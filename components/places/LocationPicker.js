@@ -6,16 +6,38 @@ import {
 } from "expo-location";
 import OutlinedButton from "../ui/OutlinedButton";
 import { Colors } from "../../constants/colors";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getMapPreview } from "../../util/location";
-import { useNavigation } from "@react-navigation/native";
+import {
+  useIsFocused,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 
 function LocationPicker() {
   const [pickedLocation, setPickedLocation] = useState();
+
+  const isFocused = useIsFocused();
   const navigation = useNavigation();
-  //this is required for the both operating systems ios and android................................................
+  const route = useRoute();
+
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
+
+  // I'm checking the route.params because the params will only set when AddPlace screen was navigated from Map screen.
+
+  useEffect(() => {
+    if (isFocused && route.params) {
+      const mapPickedLocation = {
+        lat: route.params.pickedLat,
+        lng: route.params.pickedLng,
+      };
+      setPickedLocation(mapPickedLocation);
+    }
+  }, [route, isFocused]);
+
+  //this is required for the both operating systems ios and android................................................
+
   async function verifyPermissions() {
     if (
       locationPermissionInformation.status === PermissionStatus.UNDETERMINED
