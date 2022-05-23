@@ -14,7 +14,7 @@ import {
   useRoute,
 } from "@react-navigation/native";
 
-function LocationPicker() {
+function LocationPicker({ onPickLocation }) {
   const [pickedLocation, setPickedLocation] = useState();
 
   const isFocused = useIsFocused();
@@ -35,6 +35,10 @@ function LocationPicker() {
       setPickedLocation(mapPickedLocation);
     }
   }, [route, isFocused]);
+
+  useEffect(() => {
+    onPickLocation(pickedLocation);
+  }, [pickedLocation, onPickLocation]);
 
   //this is required for the both operating systems ios and android................................................
 
