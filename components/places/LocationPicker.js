@@ -8,9 +8,11 @@ import OutlinedButton from "../ui/OutlinedButton";
 import { Colors } from "../../constants/colors";
 import { useState } from "react";
 import { getMapPreview } from "../../util/location";
+import { useNavigation } from "@react-navigation/native";
 
 function LocationPicker() {
   const [pickedLocation, setPickedLocation] = useState();
+  const navigation = useNavigation();
   //this is required for the both operating systems ios and android................................................
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
@@ -46,7 +48,10 @@ function LocationPicker() {
       lng: location.coords.longitude,
     });
   }
-  function pickOnMapHandler() {}
+  function pickOnMapHandler() {
+    navigation.navigate("Map");
+  }
+
   let locationPreview = <Text> No location picked yet! </Text>;
   if (pickedLocation) {
     console.log(getMapPreview(pickedLocation.lat, pickedLocation.lng));
